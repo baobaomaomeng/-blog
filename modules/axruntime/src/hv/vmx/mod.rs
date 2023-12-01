@@ -2,6 +2,9 @@ mod device_emu;
 
 use hypercraft::{VmxExitReason, VCpu as HVCpu, HyperResult, HyperError, VmxExitInfo};
 use device_emu::VirtLocalApic;
+#[cfg(feature = "axtask")]
+extern crate axtask;
+use axtask as thread;
 
 type VCpu = HVCpu<super::HyperCraftHalImpl>;
 
@@ -181,6 +184,11 @@ pub fn vmexit_handler(vcpu: &mut VCpu) -> HyperResult {
         VmxExitReason::IO_INSTRUCTION => handle_io_instruction(vcpu, &exit_info),
         VmxExitReason::MSR_READ => handle_msr_read(vcpu),
         VmxExitReason::MSR_WRITE => handle_msr_write(vcpu),
+        VmxExitReason::PREEMPTION_TIMER => {
+            thread::yield_now();
+            info!("VM {} vcpu {} vmexit come back with {:#x?}_1!!!",vcpu.get_vm_id(), vcpu.get_vcpu_id(),exit_info.exit_reason);
+            vcpu.load_vmcs()
+        },
         _ => panic!("vmexit reason not supported {:?}:\n{:?}", exit_info.exit_reason, vcpu)
     }
 }
