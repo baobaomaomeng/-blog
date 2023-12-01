@@ -12,7 +12,7 @@
 
 在单cpu上，利用时钟中断，进行vm的切换。vmcs区域中有一个VMX_PREEMPTION_TIMER_VALUE字段。作用如图
 
-![image-20231130191624874](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20231130191624874.png)
+![image-20231130191624874](images/image-20231130191624874.png)
 
 为了使用该字段值达到利用时钟切换的目的，我们需要新增一个退出信息以及退出信息的处理，在PINBASED_EXEC_CONTROLS中设置该操作允许执行，以及在切换vm后重新设置该值
 
